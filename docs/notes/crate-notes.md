@@ -262,6 +262,7 @@ Server 侧辅码接线：`RouterConfig.aux_code_key` / `aux_code_show`（`apply_
 
 Windows 可选的 `[shortcut] toggle_punctuation` 经 `InputSettings` 下发，由 TSF 保留键触发原有标点菜单命令；
 修改或关闭时撤掉旧登记，句号使用 `VK_OEM_PERIOD`，不能使用字符的 ASCII 值（那是 Delete）。
+首次获焦可能早于 `Activate` 设置 `thread_mgr`，因此保留键同步必须在设置值缓存命中前执行，管理器就绪后才能补登记。
 `extra_page_keys` 与主翻页键并用，只影响候选翻页，不覆盖表达式、直输段或辅码触发键。
 输入方案由 `[general] scheme` 一处决定，Server 启动与热加载各装配一次；形码的码表用 `dispatch::code::find_code_table` 找
 （用户目录 `wubi/wubi86.tsv` 优先，随包 `assets/wubi/wubi86.tsv` 兜底——走 `assets/` 与 emoji / levels 一致，开发布局也对得上），**路径在启动时定下、热加载不重新找**。
