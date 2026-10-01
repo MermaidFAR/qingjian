@@ -80,8 +80,7 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
         ),
         field(
             "中英切换键",
-            "勾上的键都能在中英之间切换，可以多选，改完立刻生效。打字时容易误触 Shift 的话改勾「单击 Ctrl」；一个都不勾时只剩任务栏 / 悬浮状态条上的「中」「英」按钮。\
-             系统自带的 Ctrl + Space 也能切中英，与微软拼音一致，不用勾（装了别的输入法时 Windows 可能改用它切换输入法）。",
+            "勾上的键都能在中英之间切换，可以多选，改完立刻生效。系统 Ctrl + Space 由 Windows 管理，也会影响微软拼音等简体中文输入法。",
             switch_key_boxes(settings, context),
         ),
         field(
