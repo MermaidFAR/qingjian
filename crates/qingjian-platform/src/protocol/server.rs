@@ -14,6 +14,10 @@ use crate::config::{KeyCombo, SwitchKeys};
 /// `%APPDATA%\Qingjian` 对 AppContainer 里的商店应用本来也读不到。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct InputSettings {
+    /// 可选标点切换键；Server 下发并由 DLL 热更新 TSF 保留键。
+    #[serde(default)]
+    pub toggle_punctuation: Option<KeyCombo>,
+
     /// 中英切换键（`[shortcut] switch_mode`）。
     pub switch_mode: SwitchKeys,
 
@@ -24,19 +28,15 @@ pub struct InputSettings {
     /// 按住 Shift 敲的字母吃不吃：缺省交给应用，开着时送 Server 起一段组句（`⇧C` 接 `pan` 出「C盘」）。
     #[serde(default)]
     pub shift_letter_compose: bool,
-
-    /// 可选标点切换键；Server 下发并由 DLL 热更新 TSF 保留键。
-    #[serde(default)]
-    pub toggle_punctuation: Option<KeyCombo>,
 }
 
 impl Default for InputSettings {
     fn default() -> Self {
         Self {
+            toggle_punctuation: None,
             switch_mode: SwitchKeys::default(),
             english_mode: true,
             shift_letter_compose: false,
-            toggle_punctuation: None,
         }
     }
 }
