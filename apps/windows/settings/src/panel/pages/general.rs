@@ -51,17 +51,16 @@ fn shift_letter_combo(current: ShiftLetter, callback: Callback<Option<usize>>) -
         .on_selection_changed(callback)
 }
 
-pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> View {
+/// 在内置英文总开关后插入应用模式选项，保持切换键与其余通用设置的顺序。
+fn app_mode_rows(
+    settings: &Settings,
+    context: &mut ViewContext<Settings>,
+    rows: impl IntoIterator<Item = View>,
+) -> View {
     let g = &settings.config.general;
-    let english_off = !settings.config.apps.english_candidates_off.is_empty();
-    let rows = [
-        field(
-            "启用内置英文模式",
-            "关掉后青简固定中文模式：切换键与任务栏、悬浮状态条上的「中」「英」按钮都不再切到英文，需要英文时用系统快捷键（Win + Space）切到别的输入法。",
-            ToggleSwitch::new()
-                .is_on(g.english_mode)
-                .on_toggled(context.callback(Message::EnglishMode)),
-        ),
+    let mut rows = rows.into_iter();
+    let english_mode = rows.next();
+    let mode_rows = [
         field(
             "默认英文模式",
             "青简启动时使用英文；按应用记忆时，没有记录的应用也从英文开始。更改这两项会重置已记住的状态。",
@@ -77,6 +76,28 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
                 .is_on(g.remember_mode_per_app)
                 .is_enabled(g.english_mode)
                 .on_toggled(context.callback(Message::RememberModePerApp)),
+        ),
+    ];
+    StackPanel::new().spacing(16.0).keyed_children(
+        english_mode
+            .into_iter()
+            .chain(mode_rows)
+            .chain(rows)
+            .enumerate()
+            .map(|(index, view)| (index.to_string(), view)),
+    )
+}
+
+pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> View {
+    let g = &settings.config.general;
+    let english_off = !settings.config.apps.english_candidates_off.is_empty();
+    let rows = [
+        field(
+            "启用内置英文模式",
+            "关掉后青简固定中文模式：切换键与任务栏、悬浮状态条上的「中」「英」按钮都不再切到英文，需要英文时用系统快捷键（Win + Space）切到别的输入法。",
+            ToggleSwitch::new()
+                .is_on(g.english_mode)
+                .on_toggled(context.callback(Message::EnglishMode)),
         ),
         field(
             "中英切换键",
@@ -180,7 +201,7 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
             shift_letter_combo(g.shift_letter, context.callback(Message::ShiftLetter)),
         ),
     ];
-    page("通用", StackPanel::new().spacing(16.0).children(rows))
+    page("通用", app_mode_rows(settings, context, rows))
 }
 
 /// 中英切换键：每个键一个勾选框，横排。
