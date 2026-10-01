@@ -50,6 +50,8 @@ pub(crate) enum Message {
 
     // 快捷键页
     PageKeys(Option<usize>),
+    TogglePunctuation(bool),
+    ExtraPageKey(&'static str, bool),
     ModeExpression(Option<usize>),
     ModeQuestion(Option<usize>),
     QuestionMark(bool),

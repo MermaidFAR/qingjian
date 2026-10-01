@@ -4,7 +4,7 @@ use super::frame::Frame;
 use super::indicator::IndicatorState;
 use super::key::KeyOutcome;
 use super::session::SessionId;
-use crate::config::SwitchKeys;
+use crate::config::{KeyCombo, SwitchKeys};
 
 /// Server 下发给 DLL 的「按键行为」设置。
 ///
@@ -24,6 +24,10 @@ pub struct InputSettings {
     /// 按住 Shift 敲的字母吃不吃：缺省交给应用，开着时送 Server 起一段组句（`⇧C` 接 `pan` 出「C盘」）。
     #[serde(default)]
     pub shift_letter_compose: bool,
+
+    /// 可选标点切换键；Server 下发并由 DLL 热更新 TSF 保留键。
+    #[serde(default)]
+    pub toggle_punctuation: Option<KeyCombo>,
 }
 
 impl Default for InputSettings {
@@ -32,6 +36,7 @@ impl Default for InputSettings {
             switch_mode: SwitchKeys::default(),
             english_mode: true,
             shift_letter_compose: false,
+            toggle_punctuation: None,
         }
     }
 }

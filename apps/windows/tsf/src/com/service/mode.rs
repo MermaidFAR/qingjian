@@ -68,6 +68,7 @@ impl TextService_Impl {
             input.shift_letter_compose
         ));
         self.apply_mode_settings(input.english_mode, input.switch_mode);
+        self.sync_punctuation_key(input.toggle_punctuation);
     }
 
     /// Ctrl + Alt + Space 是组合键、走 TSF 保留键（与「翻译选中文字」同一套）；没勾就撤掉登记，免得白占着。
