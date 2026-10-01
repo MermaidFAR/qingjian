@@ -151,6 +151,7 @@ fn tab_with_raw_input_and_no_candidates_is_consumed_without_commit() {
 
 #[test]
 fn all_extra_pairs_page_chinese_candidates_without_committing() {
+    let mut baseline = router(1);
     let mut router = router(1);
     router.config.extra_page_keys = vec!["[]".into(), ",.".into(), "-=".into()]
         .try_into()
@@ -169,7 +170,11 @@ fn all_extra_pairs_page_chinese_candidates_without_committing() {
             (KeyOutcome::Consumed, None, 0)
         );
     }
-    // 清掉额外键后，逗号重新上屏候选并带上标点。
+    // 清掉额外键后，逗号恢复为原有输入行为。
     router.config.extra_page_keys = Default::default();
-    assert!(key(&mut router, 0xBC, Some(','), normal).1.is_some());
+    compose(&mut baseline, "qq", normal);
+    let expected = key(&mut baseline, 0xBC, Some(','), normal);
+    let actual = key(&mut router, 0xBC, Some(','), normal);
+    assert_eq!((actual.0, actual.1), (expected.0, expected.1));
+    assert_eq!(router.engine.composition(), baseline.engine.composition());
 }
