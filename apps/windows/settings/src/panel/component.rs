@@ -82,6 +82,10 @@ impl Component for Settings {
                 };
                 self.save_array("apps", "english_candidates_off", &list);
             }
+            Message::SystemCtrlSpace(on) => match super::system_hotkey::set_ctrl_space(on) {
+                Ok(()) => self.notice.clear(),
+                Err(error) => self.notice.fail(error),
+            },
             Message::SwitchKey(key, on) => {
                 let keys = self.config.shortcut.switch_mode.with(key, on);
                 let values: Vec<String> =

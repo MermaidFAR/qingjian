@@ -23,6 +23,8 @@ pub(crate) enum Message {
     EnglishOffInApps(bool),
     /// 勾上 / 去掉一个中英切换键。
     SwitchKey(qingjian_platform::SwitchKey, bool),
+    /// Windows 的 Ctrl + Space，直接读写系统快捷键。
+    SystemCtrlSpace(bool),
     /// 内置英文模式总开关。
     EnglishMode(bool),
 
