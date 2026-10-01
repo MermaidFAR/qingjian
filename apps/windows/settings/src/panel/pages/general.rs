@@ -56,6 +56,35 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
     let english_off = !settings.config.apps.english_candidates_off.is_empty();
     let rows = [
         field(
+            "启用内置英文模式",
+            "关掉后青简固定中文模式：切换键与任务栏、悬浮状态条上的「中」「英」按钮都不再切到英文，需要英文时用系统快捷键（Win + Space）切到别的输入法。",
+            ToggleSwitch::new()
+                .is_on(g.english_mode)
+                .on_toggled(context.callback(Message::EnglishMode)),
+        ),
+        field(
+            "默认英文模式",
+            "青简启动时使用英文；按应用记忆时，没有记录的应用也从英文开始。更改这两项会重置已记住的状态。",
+            ToggleSwitch::new()
+                .is_on(g.default_english)
+                .is_enabled(g.english_mode)
+                .on_toggled(context.callback(Message::DefaultEnglish)),
+        ),
+        field(
+            "按应用记住中英模式",
+            "切回应用时恢复它上次的中英状态，同一应用的窗口共用。重启青简后重新使用默认模式；关掉则所有应用共用一份。",
+            ToggleSwitch::new()
+                .is_on(g.remember_mode_per_app)
+                .is_enabled(g.english_mode)
+                .on_toggled(context.callback(Message::RememberModePerApp)),
+        ),
+        field(
+            "中英切换键",
+            "勾上的键都能在中英之间切换，可以多选，改完立刻生效。打字时容易误触 Shift 的话改勾「单击 Ctrl」；一个都不勾时只剩任务栏 / 悬浮状态条上的「中」「英」按钮。\
+             系统自带的 Ctrl + Space 也能切中英，与微软拼音一致，不用勾（装了别的输入法时 Windows 可能改用它切换输入法）。",
+            switch_key_boxes(settings, context),
+        ),
+        field(
             "学习语言",
             "候选词右侧显示哪种语言的译词，只列出装了释义表的语言；「不显示译文」同时关掉生词标记与释义兜底。",
             string_combo(
@@ -150,35 +179,6 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
             "「交给应用」是临时打英文（与以前一致）：拼音先上屏，这个键归应用；\
              「进组句」把它收进拼音缓冲区，匹配时按小写算，所以 Cpan 与 cpan 一样能出「C盘」。",
             shift_letter_combo(g.shift_letter, context.callback(Message::ShiftLetter)),
-        ),
-        field(
-            "中英切换键",
-            "勾上的键都能在中英之间切换，可以多选，改完立刻生效。打字时容易误触 Shift 的话改勾「单击 Ctrl」；一个都不勾时只剩任务栏 / 悬浮状态条上的「中」「英」按钮。\
-             系统自带的 Ctrl + Space 也能切中英，与微软拼音一致，不用勾（装了别的输入法时 Windows 可能改用它切换输入法）。",
-            switch_key_boxes(settings, context),
-        ),
-        field(
-            "启用内置英文模式",
-            "关掉后青简固定中文模式：切换键与任务栏、悬浮状态条上的「中」「英」按钮都不再切到英文，需要英文时用系统快捷键（Win + Space）切到别的输入法。",
-            ToggleSwitch::new()
-                .is_on(g.english_mode)
-                .on_toggled(context.callback(Message::EnglishMode)),
-        ),
-        field(
-            "默认英文模式",
-            "青简启动时使用英文；按应用记忆时，没有记录的应用也从英文开始。更改这两项会重置已记住的状态。",
-            ToggleSwitch::new()
-                .is_on(g.default_english)
-                .is_enabled(g.english_mode)
-                .on_toggled(context.callback(Message::DefaultEnglish)),
-        ),
-        field(
-            "按应用记住中英模式",
-            "切回应用时恢复它上次的中英状态，同一应用的窗口共用。重启青简后重新使用默认模式；关掉则所有应用共用一份。",
-            ToggleSwitch::new()
-                .is_on(g.remember_mode_per_app)
-                .is_enabled(g.english_mode)
-                .on_toggled(context.callback(Message::RememberModePerApp)),
         ),
     ];
     page("通用", StackPanel::new().spacing(16.0).children(rows))
